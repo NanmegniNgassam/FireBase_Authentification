@@ -1,17 +1,29 @@
+sessionKey = 'logged';
 "use strict";
 /*Form Handling*/
 let loginForm1 = document.getElementById('loginForm');
-let signinForm1 = document.getElementById('signinForm');
+let signupForm1 = document.getElementById('signinForm');
 /*Inputs management*/
 let emailSignin = document.getElementById('email-signin');
 let userPasswordSignin = document.getElementById('password-signin');
-let signinMessage = document.getElementById('signin-message');
+let signupMessage = document.getElementById('signin-message');
 let emailLogin = document.getElementById('email-login');
 let passwordLogin = document.getElementById('password-login');
 let loginMessage = document.getElementById('login-message');
 
 
 /* UI Fonctions */
+const formNotification = (element, status, message) => {
+    if(status) {
+        element.classList.remove('access-denied');
+        element.classList.add('access-granted');
+    } else {
+        element.classList.remove('access-granted');
+        element.classList.add('access-denied');
+    }
+
+    element.textContent = message;
+}
 
 /* Setting up firebase for our application */
 const firebaseApp = firebase.initializeApp({
@@ -30,15 +42,39 @@ const signUp = (email, password) => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((result) => {
             // Signed in 
-            console.log('You are signup');
             console.log(result);
+
+            formNotification(signupMessage, true, "Your account Creation was successful! Now login");
             // ...
         })
         .catch((error) => {
             console.log('An error occured !');
             console.log(error.code);
             console.log(error.message);
+
+            formNotification(signupMessage, false, error.code);
         });
+}
+
+const signIn = (email, password) => {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((result) => {
+      console.log(result);
+
+      let req = JSON.stringify({
+        id : result.user.uid,
+        email : result.user.email
+      });
+      sessionStorage.setItem(sessionKey, req);
+
+      //redirection
+      window.location.href = 'pages/user.html';
+    })
+    .catch((error) => {
+      console.log(error.code);
+      console.log(error.message);
+      formNotification(loginMessage, false, error.code);
+    });
 }
 
 // Traitement du formulaire de connexion
@@ -48,28 +84,15 @@ loginForm1.addEventListener('submit', (e) => {
     tryConnectStatus = (emailLogin.value.length > 0) &&
         (passwordLogin.value.length > 0);
     if (tryConnectStatus) {
-        let result = signIn(emailLogin.value, passwordLogin.value);
-        if (result == null) {
-            loginMessage.classList.remove('access-granted');
-            loginMessage.classList.add('access-denied');
-            loginMessage.textContent = "Account doesn't already exist !";
-        }
-        else {
-            // Définition d'une session storage pour la session active
-            
-            //redirection
-            window.location.href = 'pages/user.html';
-        }
+        signIn(emailLogin.value, passwordLogin.value);
     }
     else {
-        loginMessage.classList.remove('access-granted');
-        loginMessage.classList.add('access-denied');
-        loginMessage.textContent = "something's wrong with your datas";
+        formNotification(loginMessage, false, "something's wrong with your datas");
     }
 });
 
 //Traitement du formulaire d'inscription
-signinForm1.addEventListener('submit', (e) => {
+signupForm1.addEventListener('submit', (e) => {
     e.preventDefault();
     let validationStatus = false;
     let currentDate = new Date();
@@ -79,14 +102,8 @@ signinForm1.addEventListener('submit', (e) => {
     if (validationStatus) {
         //Création du coockie contenant les informations du compte utilisateur
         signUp(emailSignin.value, userPasswordSignin.value);
-
-        signinMessage.classList.add('access-granted');
-        signinMessage.classList.remove('access-denied');
-        signinMessage.textContent = "Account creation was succesful ! \n Now login";
     }
     else {
-        signinMessage.classList.remove('access-granted');
-        signinMessage.classList.add('access-denied');
-        signinMessage.textContent = "Something's wrong with your datas";
+        formNotification(signupMessage, false, "something's wrong with your datas");
     }
 });

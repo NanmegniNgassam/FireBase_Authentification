@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/img/Logo-pro.png" type="image/x-icon">
+    <link rel="stylesheet" href="public/styles/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Advanced_Form LocalStorage Project</title>
+</head>
+<body>
+    <div class="container">
+      <div class="container__hero">
+        <h1 class="container__hero__title">The unique place you can be yourself and nowhere else !</h1>
+        <img class="container__hero__img" src="https://99designs-blog.imgix.net/blog/wp-content/uploads/2021/06/Screenshot-448-e1622390297717.png?auto=format&q=60&fit=max&w=1000" alt="image d'acceuil - design inclusif">
+        <a href="" class="container__hero__button">Join our Team</a>
+        <span>Crédentials : BlacKoder 2023 @copyrights design</span>
+      </div>
+
+      <div class="container__auth">
+        <div class="container__auth__intro">
+          <h2>You're already there <i class='bx bxs-star' style='color:#e1b12c'>!</i></h2>
+          <span>Only one more step and it'll be done !</span>
+        </div>
+        <div class="auth container__auth__form">
+          <div class="auth__selection">
+            <div class="auth__selection__login active" id="loginTrigger">Login</div>
+            <div class="auth__selection__signin" id="signinTrigger">Signin</div>
+          </div>
+          <form class="auth__login active" id="loginForm">
+            <span class="access-denied" id="login-message"></span>
+            <div class="form-group">
+              <!--Insertion des messages relatifs à la validation -->
+              <label for="email">Email :</label>
+              <input type="e-mail" class="form-input" id="email-login" name="userEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password :</label>
+                <input type="password" class="form-input" id="password-login" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="form-validation"><i class='bx bxs-log-in'></i> LOGIN</button>
+          </form>
+          
+          <form class="auth__signin" id="signinForm">
+            <span class="access-granted" id="signin-message"></span>
+            <div class="form-group">
+              <label for="email">Email :</label>
+              <input type="e-mail" class="form-input" id="email-signin" name="useremail" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email">User name :</label>
+              <input type="text" class="form-input" id="username-signin" name="userName" placeholder="Enter your user name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Birthdate :</label>
+              <input type="date" class="form-input" id="userbirthday-signin" name="userBirthday" placeholder="Enter your Birthdate" required>
+            </div>
+
+            <div class="form-group">
+              <label for="pwd">Password :</label>
+              <input type="password" class="form-input" id="password-signin" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="form-validation"><i class='bx bxs-registered' ></i> REGISTER</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="public/scripts/Main.js"></script>
+    <script src="public/scripts/App.js"></script>
+</body>
+</html>

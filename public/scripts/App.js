@@ -4,97 +4,43 @@ let loginForm1 = document.getElementById('loginForm');
 let signinForm1 = document.getElementById('signinForm');
 /*Inputs management*/
 let emailSignin = document.getElementById('email-signin');
-let userNameSignin = document.getElementById('username-signin');
-let userBirthdateSignin = document.getElementById('userbirthday-signin');
 let userPasswordSignin = document.getElementById('password-signin');
 let signinMessage = document.getElementById('signin-message');
 let emailLogin = document.getElementById('email-login');
 let passwordLogin = document.getElementById('password-login');
 let loginMessage = document.getElementById('login-message');
-// Gestion de la zone mémoire
-let localDataKey = 'accounts';
-let sessionDataKey = 'logged';
-let createAccount = (userEmail, userName, userBirthday, userPassword) => {
-    let db = localStorage.getItem(localDataKey);
-    let isAccountUnique = true;
-    let data = {
-        name: userName,
-        email: userEmail,
-        birth: userBirthday,
-        password: userPassword
-    };
-    let accounts = Array();
-    let req;
-    if (db == null) { // users accounts db is empty
-        // Ajout de deux comptes fictifs
-        accounts.push({
-            name: 'Gilles',
-            email: 'gilles@gmail.com',
-            birth: '2004-01-07T00:00:00.000Z',
-            password: 'killer'
+
+
+/* UI Fonctions */
+
+/* Setting up firebase for our application */
+const firebaseApp = firebase.initializeApp({
+    apiKey: "AIzaSyBJhGGlS4TvyBy9sdghRnwBoT8JJr2REmw",
+    authDomain: "authentication-black19.firebaseapp.com",
+    projectId: "authentication-black19",
+    storageBucket: "authentication-black19.appspot.com",
+    messagingSenderId: "956212063681",
+    appId: "1:956212063681:web:e0b8cd52909d25f0b71340"
+  });
+  const db = firebaseApp.firestore();
+  const auth = firebaseApp.auth();
+
+
+const signUp = (email, password) => {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((result) => {
+            // Signed in 
+            console.log('You are signup');
+            console.log(result);
+            // ...
+        })
+        .catch((error) => {
+            console.log('An error occured !');
+            console.log(error.code);
+            console.log(error.message);
         });
-        accounts.push({
-            name: 'Root',
-            email: 'root@gmail.com',
-            birth: '2002-01-01T00:00:00.000Z',
-            password: 'killer'
-        });
-        //vérifier si les clés de connexions passées n'existent pas déjà
-        accounts.map((account) => {
-            if ((account.email == data.email) && (account.password == data.password)) {
-                isAccountUnique = false;
-            }
-        });
-        if (isAccountUnique) {
-            accounts.push(data);
-        }
-        else {
-            signinMessage.classList.remove('access-granted');
-            signinMessage.classList.add('access-denied');
-            signinMessage.textContent = "Account already exists";
-        }
-        req = JSON.stringify(accounts);
-        localStorage.setItem(localDataKey, req);
-    }
-    else { //user accounts db already exists
-        accounts = JSON.parse(db);
-        //vérifier si les clés de connexions passées n'existent pas déjà
-        accounts.map((account) => {
-            if ((account.email == data.email) && (account.password == data.password)) {
-                isAccountUnique = false;
-            }
-        });
-        if (isAccountUnique) {
-            accounts.push(data);
-        }
-        else {
-            signinMessage.classList.remove('access-granted');
-            signinMessage.classList.add('access-denied');
-            signinMessage.textContent = "Account already exists";
-        }
-        req = JSON.stringify(accounts);
-        localStorage.setItem(localDataKey, req);
-    }
-};
-let tryConnection = (email, password) => {
-    let accounts = Array();
-    let matchingAccount = null;
-    let req;
-    req = localStorage.getItem(localDataKey);
-    if (req == null) {
-        return null;
-    }
-    else {
-        accounts = JSON.parse(req);
-        // recherche du couple email-motDePasse correspondant à la tentative de connexion
-        accounts.map((account) => {
-            if ((account.email == email) && (account.password == password)) {
-                matchingAccount = account;
-            }
-        });
-        return matchingAccount;
-    }
-};
+}
+
 // Traitement du formulaire de connexion
 loginForm1.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -102,7 +48,7 @@ loginForm1.addEventListener('submit', (e) => {
     tryConnectStatus = (emailLogin.value.length > 0) &&
         (passwordLogin.value.length > 0);
     if (tryConnectStatus) {
-        let result = tryConnection(emailLogin.value, passwordLogin.value);
+        let result = signIn(emailLogin.value, passwordLogin.value);
         if (result == null) {
             loginMessage.classList.remove('access-granted');
             loginMessage.classList.add('access-denied');
@@ -110,9 +56,9 @@ loginForm1.addEventListener('submit', (e) => {
         }
         else {
             // Définition d'une session storage pour la session active
-            sessionStorage.setItem(sessionDataKey, JSON.stringify(result));
+            
             //redirection
-            window.location.href = 'public/pages/user.html';
+            window.location.href = 'pages/user.html';
         }
     }
     else {
@@ -121,26 +67,22 @@ loginForm1.addEventListener('submit', (e) => {
         loginMessage.textContent = "something's wrong with your datas";
     }
 });
+
 //Traitement du formulaire d'inscription
 signinForm1.addEventListener('submit', (e) => {
     e.preventDefault();
     let validationStatus = false;
     let currentDate = new Date();
     validationStatus = (emailSignin.value.length > 0) &&
-        (userNameSignin.value.length > 0) &&
-        (userBirthdateSignin.value.length > 0) &&
         (userPasswordSignin.value.length > 0);
-    let birthdate = userBirthdateSignin.value.split('-');
-    let birthEntry = new Date(Date.UTC(Number(birthdate[0]), Number(birthdate[1]) - 1, Number(birthdate[2]), 0, 0, 0));
-    // Verification of birthdate validity
-    validationStatus = ((currentDate.valueOf() > birthEntry.valueOf()));
+
     if (validationStatus) {
+        //Création du coockie contenant les informations du compte utilisateur
+        signUp(emailSignin.value, userPasswordSignin.value);
+
         signinMessage.classList.add('access-granted');
         signinMessage.classList.remove('access-denied');
         signinMessage.textContent = "Account creation was succesful ! \n Now login";
-        //Création du coockie contenant les informations du compte utilisateur
-        //redirection vers la page utilisateur
-        createAccount(emailSignin.value, userNameSignin.value, birthEntry, userPasswordSignin.value);
     }
     else {
         signinMessage.classList.remove('access-granted');

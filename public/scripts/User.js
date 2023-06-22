@@ -4,18 +4,20 @@ let result = sessionStorage.getItem(sessionKey);
 let account;
 // Contrôle de la validité de la session en cours
 if (result == null) {
-    window.location.href = '../../index.html';
+    window.location.href = '../index.html';
 }
 else {
     account = JSON.parse(result);
 }
 // Récupération des élements UI
-let userName = document.getElementById('userName');
 let userEmail = document.getElementById('userEmail');
-let userAge = document.getElementById('userAge');
+let logoutButton = document.getElementById('logout');
 // Personnalisation du template
 if (result != null) {
-    userName.textContent = account.name;
     userEmail.textContent = account.email;
-    userAge.textContent = (account.birth.split('T'))[0];
 }
+logoutButton.addEventListener('click', (e) => {
+    sessionStorage.removeItem(sessionKey);
+    window.location.href = '../index.html';
+});
+/* Gestion du graphe de repartion */
